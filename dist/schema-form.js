@@ -474,7 +474,7 @@ angular.module('schemaForm').provider('schemaForm',
   };
 
   var defaultFormDefinition = function(name, prop, options, models) {
-    var rules = prop["$ref"] ? lookupRef(models, prop["$ref"]) : defaults[prop.type];
+    var rules = prop["$ref"] ? lookupRef(models, prop["$ref"], prop) : defaults[prop.type];
     if (rules) {
       var def;
       for (var i = 0; i < rules.length; i++) {
@@ -487,11 +487,12 @@ angular.module('schemaForm').provider('schemaForm',
     }
   };
 
-  var lookupRef = function(models, ref) {
+  var lookupRef = function(models, ref, prop) {
     var model = models && models[ref];
     if(!model) {
       throw new Error("Unknown model " + ref);
     }
+    model.title = prop.title;
     model.type = 'object'; // to fool defaultFormDefinition
     return [function(name, _, options) {
       return fieldset(name, model, options, models);

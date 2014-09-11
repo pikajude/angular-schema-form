@@ -17,6 +17,11 @@
         "title": "Comment",
         "$ref": "Comment",
         "validationMessage": "Don't be greedy!"
+      },
+      "comment2": {
+        "title": "Comment2",
+        "$ref": "Comment",
+        "validationMessage": "Don't be greedy!"
       }
     },
     "required": ["name","email","comment"],
