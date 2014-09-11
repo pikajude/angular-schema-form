@@ -473,8 +473,8 @@ angular.module('schemaForm').provider('schemaForm',
     return titleMap;
   };
 
-  var defaultFormDefinition = function(schema, name, prop, options) {
-    var rules = prop["$ref"] ? lookupRef(schema, prop["$ref"]) : defaults[prop.type];
+  var defaultFormDefinition = function(name, prop, options, models) {
+    var rules = prop["$ref"] ? lookupRef(models, prop["$ref"]) : defaults[prop.type];
     if (rules) {
       var def;
       for (var i = 0; i < rules.length; i++) {
@@ -487,14 +487,14 @@ angular.module('schemaForm').provider('schemaForm',
     }
   };
 
-  var lookupRef = function(schema, ref) {
-    var model = schema.models && schema.models[ref];
+  var lookupRef = function(models, ref) {
+    var model = models && models[ref];
     if(!model) {
       throw new Error("Unknown model " + ref);
     }
     model.type = 'object'; // to fool defaultFormDefinition
     return [function(name, _, options) {
-      return fieldset(name, model, options);
+      return fieldset(name, model, options, models);
     }];
   };
 
@@ -596,7 +596,7 @@ angular.module('schemaForm').provider('schemaForm',
     }
   };
 
-  var fieldset = function(name, schema, options) {
+  var fieldset = function(name, schema, options, models) {
 
     if (schema.type === 'object') {
       var f   = stdFormObj(name, schema, options);
@@ -611,12 +611,12 @@ angular.module('schemaForm').provider('schemaForm',
         if (options.ignore[sfPathProvider.stringify(path)] !== true) {
           var required = schema.required && schema.required.indexOf(k) !== -1;
 
-          var def = defaultFormDefinition(schema, k, v, {
+          var def = defaultFormDefinition(k, v, {
             path: path,
             required: required || false,
             lookup: options.lookup,
             ignore: options.ignore
-          });
+          }, models);
           if (def) {
             f.items.push(def);
           }
@@ -821,13 +821,13 @@ angular.module('schemaForm').provider('schemaForm',
         angular.forEach(schema.properties, function(v, k) {
           if (ignore[k] !== true) {
             var required = schema.required && schema.required.indexOf(k) !== -1;
-            var def = defaultFormDefinition(schema, k, v, {
+            var def = defaultFormDefinition(k, v, {
               path: [k],         // Path to this property in bracket notation.
               lookup: lookup,    // Extra map to register with. Optimization for merger.
               ignore: ignore,    // The ignore list of paths (sans root level name)
               required: required, // Is it required? (v4 json schema style)
               global: globalOptions // Global options, including form defaults
-            });
+            }, schema.models);
             if (def) {
               form.push(def);
             }

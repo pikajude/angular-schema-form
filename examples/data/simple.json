@@ -28,8 +28,16 @@
             "title": "Name"
           },
           "commenter": {
-            "type": "string",
+            "$ref": "Person",
             "title": "Commenter"
+          }
+        }
+      },
+      "Person": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
           }
         }
       }
