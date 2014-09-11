@@ -15,23 +15,31 @@
       },
       "comment": {
         "title": "Comment",
-        "type": "string",
-        "maxLength": 20,
+        "$ref": "Comment",
         "validationMessage": "Don't be greedy!"
       }
     },
-    "required": ["name","email","comment"]
+    "required": ["name","email","comment"],
+    "models": {
+      "Comment": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "commenter": {
+            "type": "string",
+            "title": "Commenter"
+          }
+        }
+      }
+    }
   },
   "form": [
-    "name",
-    "email",
-    {
-      "key": "comment",
-      "type": "textarea"
-    },
+    "*",
     {
       "type": "submit",
-	  "style": "btn-info",
+      "style": "btn-info",
       "title": "OK"
     }
   ]

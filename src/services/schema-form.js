@@ -34,18 +34,29 @@ angular.module('schemaForm').provider('schemaForm',
     return titleMap;
   };
 
-  var defaultFormDefinition = function(name, schema, options) {
-    var rules = defaults[schema.type];
+  var defaultFormDefinition = function(schema, name, prop, options) {
+    var rules = prop["$ref"] ? lookupRef(schema, prop["$ref"]) : defaults[prop.type];
     if (rules) {
       var def;
       for (var i = 0; i < rules.length; i++) {
-        def = rules[i](name, schema, options);
+        def = rules[i](name, prop, options);
         //first handler in list that actually returns something is our handler!
         if (def) {
           return def;
         }
       }
     }
+  };
+
+  var lookupRef = function(schema, ref) {
+    var model = schema.models && schema.models[ref];
+    if(!model) {
+      throw new Exception("Unknown model " + ref);
+    }
+    model.type = 'object'; // to fool defaultFormDefinition
+    return [function(name, _, options) {
+      return fieldset(name, model, options);
+    }];
   };
 
   //Creates a form object with all common properties
@@ -161,7 +172,7 @@ angular.module('schemaForm').provider('schemaForm',
         if (options.ignore[sfPathProvider.stringify(path)] !== true) {
           var required = schema.required && schema.required.indexOf(k) !== -1;
 
-          var def = defaultFormDefinition(k, v, {
+          var def = defaultFormDefinition(schema, k, v, {
             path: path,
             required: required || false,
             lookup: options.lookup,
@@ -371,7 +382,7 @@ angular.module('schemaForm').provider('schemaForm',
         angular.forEach(schema.properties, function(v, k) {
           if (ignore[k] !== true) {
             var required = schema.required && schema.required.indexOf(k) !== -1;
-            var def = defaultFormDefinition(k, v, {
+            var def = defaultFormDefinition(schema, k, v, {
               path: [k],         // Path to this property in bracket notation.
               lookup: lookup,    // Extra map to register with. Optimization for merger.
               ignore: ignore,    // The ignore list of paths (sans root level name)
