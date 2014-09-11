@@ -490,7 +490,7 @@ angular.module('schemaForm').provider('schemaForm',
   var lookupRef = function(schema, ref) {
     var model = schema.models && schema.models[ref];
     if(!model) {
-      throw new Exception("Unknown model " + ref);
+      throw new Error("Unknown model " + ref);
     }
     model.type = 'object'; // to fool defaultFormDefinition
     return [function(name, _, options) {
