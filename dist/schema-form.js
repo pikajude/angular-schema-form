@@ -478,7 +478,7 @@ angular.module('schemaForm').provider('schemaForm',
     if (rules) {
       var def;
       for (var i = 0; i < rules.length; i++) {
-        def = rules[i](name, prop, options);
+        def = rules[i](name, prop, options, models);
         //first handler in list that actually returns something is our handler!
         if (def) {
           return def;
@@ -629,8 +629,7 @@ angular.module('schemaForm').provider('schemaForm',
 
   };
 
-  var array = function(name, schema, options) {
-
+  var array = function(name, schema, options, models) {
     if (schema.type === 'array') {
       var f   = stdFormObj(name, schema, options);
       f.type  = 'array';
@@ -653,7 +652,7 @@ angular.module('schemaForm').provider('schemaForm',
         required: required || false,
         lookup: options.lookup,
         ignore: options.ignore
-      })];
+      }, models)];
 
       return f;
     }
@@ -736,7 +735,7 @@ angular.module('schemaForm').provider('schemaForm',
       form  = form || ['*'];
       options = options || {};
 
-      var stdForm = service.defaults(schema, ignore, options);
+      var stdForm = service.defaults(schema, ignore, options, schema.models);
       //simple case, we have a "*", just put the stdForm there
       var idx = form.indexOf('*');
       if (idx !== -1) {
