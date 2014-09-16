@@ -742,7 +742,6 @@ angular.module('schemaForm').provider('schemaForm',
         form  = form.slice(0, idx)
                     .concat(stdForm.form)
                     .concat(form.slice(idx + 1));
-        return form;
       }
 
       //ok let's merge!
