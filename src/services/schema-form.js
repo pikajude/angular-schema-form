@@ -49,7 +49,9 @@ angular.module('schemaForm').provider('schemaForm',
   };
 
   var lookupRef = function(models, ref, prop) {
-    var model = models && models[ref];
+    // TODO: This may not be appropriate if we pull in models from two different sources
+    var modelName = ref.split('#')[1].replace("/definitions/", "");
+    var model = models && models[modelName];
     if(!model) {
       throw new Error("Unknown model " + ref);
     }
@@ -387,7 +389,7 @@ angular.module('schemaForm').provider('schemaForm',
               ignore: ignore,    // The ignore list of paths (sans root level name)
               required: required, // Is it required? (v4 json schema style)
               global: globalOptions // Global options, including form defaults
-            }, schema.models);
+            }, schema.definitions);
             if (def) {
               form.push(def);
             }
